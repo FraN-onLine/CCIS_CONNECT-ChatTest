@@ -22,10 +22,18 @@
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+
+        let counter = 0;
+        const username = prompt("Enter your username:") || "Anonymous";
+
         const socket = io({
           auth: {
-            serverOffset: 0
-          }
+            serverOffset: 0,
+            username: username
+          },
+          // enable retries
+          ackTimeout: 10000, // 10 seconds acknowledgment timeout
+          retries: 3,
         });
       
         const form = document.getElementById('form');
@@ -35,14 +43,16 @@
         form.addEventListener('submit', (e) => {
           e.preventDefault();
           if (input.value) { //basically checks if meron talaga input yang user mo
-            socket.emit('chat message', input.value);
+            // compute a unique offset
+            const clientOffset = `${socket.id}-${counter++}`;
+            socket.emit('chat message', input.value, clientOffset);
             input.value = '';
           }
         });
       
-        socket.on('chat message', (msg, serverOffset) => {
+        socket.on('chat message', (msg, serverOffset, sender) => {
           const item = document.createElement('li');
-          item.textContent = msg;
+          item.textContent = `${sender || 'Anonymous'}: ${msg}`;
           messages.appendChild(item);
           window.scrollTo(0, document.body.scrollHeight);
           socket.auth.serverOffset = serverOffset;
