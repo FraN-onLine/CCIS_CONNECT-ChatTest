@@ -5,3 +5,4 @@ npm start
 
 npm install socket.io
 npm install sqlite sqlite3
+npm install @socket.io/cluster-adapter
