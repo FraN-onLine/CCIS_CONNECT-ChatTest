@@ -5,6 +5,9 @@ const { Server } = require('socket.io');
 const { availableParallelism } = require('node:os');
 const cluster = require('node:cluster');
 const { createAdapter, setupPrimary } = require('@socket.io/cluster-adapter');
+const app = express();
+
+app.use(express.static('src')); //this is the folder that contains the static files, such as the index.html file and the css file
 
 if (cluster.isPrimary) { //this is the primary thread, which is the main thread that runs the code, a worker is a thread that runs the code in parallel with the primary thread
     const numCPUs = availableParallelism(); //this is the number of available cores on the machine, this is used to determine how many workers to create
@@ -29,6 +32,22 @@ async function main() {
     const io = new Server(server, {
         connectionStateRecovery: {}
       }); //basically these sets up the server and socket.io
+
+      const multer = require('multer');
+      const fs = require('fs');
+      
+      // Configure multer for file storage
+      const upload = multer({ dest: 'uploads/' });
+      
+      // Serve uploaded files statically
+      app.use('/uploads', express.static('uploads'));
+      
+      // Handle file uploads
+      app.post('/upload', upload.single('file'), (req, res) => {
+        if (!req.file) return res.status(400).send('No file uploaded.');
+        res.json({ filePath: `/uploads/${req.file.filename}`, originalName: req.file.originalname });
+      });
+      
 
     io.adapter(createAdapter()); //this sets up the adapter for socket.io, this is used to communicate between the workers and the primary thread
 
