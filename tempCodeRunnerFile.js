@@ -7,6 +7,8 @@ const cluster = require('node:cluster');
 const { createAdapter, setupPrimary } = require('@socket.io/cluster-adapter');
 const app = express();
 
+app.use(express.static('src')); //this is the folder that contains the static files, such as the index.html file and the css file
+
 if (cluster.isPrimary) { //this is the primary thread, which is the main thread that runs the code, a worker is a thread that runs the code in parallel with the primary thread
     const numCPUs = availableParallelism(); //this is the number of available cores on the machine, this is used to determine how many workers to create
     // create one worker per available core, a core is a CPU that can run a thread, so if you have 4 cores, you will have 4 workers
@@ -123,10 +125,3 @@ io.on('connection', async (socket) => {
 }
 
 main();
-// bale io.emit() emits an event arg1, while passing the args (arg2 etc) to the event handler.
-// io.emit('event', arg1, arg2, ...);
-
-//what is io? io is the instance of socket.io that is created when you call new Server(server).
-//io is used to communicate with the server and send messages to all connected clients.
-
-//what is handshake? handshake is the process of establishing a connection between the client and the server. It is used to authenticate the client and server and to exchange information between them. In this case, it is used to get the username and serverOffset from the client when they connect to the server. The handshake is done automatically by socket.io when you call io.on('connection', (socket) => {...}). The socket object contains information about the connection, such as the id of the socket, the handshake data, and the connection state.

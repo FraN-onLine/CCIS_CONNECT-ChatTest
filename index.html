@@ -1,115 +1,310 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>CCISConnect</title>
-    <style>
-      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CCISConnect</title>
+  <!-- <link rel="stylesheet" href="styles.css"> di ko kaya maiexternal css-->
+<style>
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f6f7fb;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
 
-      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
-      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
-      #input:focus { outline: none; }
-      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+  .sidebar {
+    width: 250px;
+    background: #080824;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+  }
+  .sidebar h2 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: #c5ad4e;
+  }
+  .sidebar nav {
+    flex-grow: 1;
+  }
+  .sidebar nav button {
+    display: block;
+    background: none;
+    border: none;
+    color: #d1d5db;
+    padding: 0.75rem;
+    width: 100%;
+    text-align: left;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  .sidebar nav button:hover {
+    background: #27272a;
+  }
 
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages > li { padding: 0.5rem 1rem; }
-      #messages > li:nth-child(odd) { background: #efefef; }
-    </style>
-  </head>
-  <body>
-<header style="background-color: #d5d4d4; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
-  <h1 style="font-size: 1.5rem; color: rgb(219, 170, 90); margin: 0;">
-    <span style="color: rgb(29, 29, 106)">C</span>CIS <span style="color: rgb(29, 29, 106)">C</span>ONNECT
-    </h1>
-<div>
-  <span id="navbar-username" style="margin-right: 1rem;">Anonymous</span>
-<button id="logout-button" style="background-color: #f44336; color: white; border: none; padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer;" fdprocessedid="4uyuoe">Logout</button>
+  /* Main Area */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
 
-</div>
-</header>
-<script>
-  document.getElementById('logout-button').addEventListener('click', () => {
-    window.location.reload(); // Simple logout functionality
-  });
+  /* Top Navigation */
+  .topbar {
+    background: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .topbar nav button {
+    background: none;
+    border: none;
+    margin-right: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #6b7280;
+  }
+  .topbar nav button.active {
+    color: #000;
+    border-bottom: 2px solid #6366f1;
+  }
+  .topbar .profile {
+    display: flex;
+    align-items: center;
+  }
+  .topbar .profile span {
+    margin-right: 1rem;
+  }
+  .topbar .profile button {
+    background: #f87171;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
 
-  const usernameSpan = document.getElementById('navbar-username');
-  usernameSpan.textContent = username; // Update navbar with the username
-</script>
+  /* Chat Content */
+  .content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
 
-    <diV style="padding-left: 3rem; padding-right: 3rem;">
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <!-- <img src="ccislogo.png" alt="CCISConnect Logo" style="width: 100px; height: auto; border-radius: 50%;"> -->
-        <h1 style="font-size: 2rem; color: rgb(219, 170, 90);">
-        <span style="color: rgb(29, 29, 106)">C</span>CIS <span style="color: rgb(29, 29, 106)">C</span>ONNECT
-        </h1>
-      <p>Welcome to CCISConnect Chat Page.</p>
-      <p>Type your message below and hit send to chat with others.</p>
+  .chat-section {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .searchbar {
+    padding: 1rem;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .searchbar input {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+  }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #f9fafb;
+  }
+  .messages li {
+    background: white;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    max-width: 60%;
+    word-break: break-word;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .messages li.self {
+    background: #6366f1;
+    color: white;
+    margin-left: auto;
+  }
+
+  .chat-form {
+    display: flex;
+    padding: 1rem;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+  }
+  .chat-form input[type="text"] {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 2rem;
+    margin-right: 1rem;
+  }
+  .chat-form input[type="file"] {
+    display: none;
+  }
+  .chat-form button {
+    background: #6366f1;
+    border: none;
+    padding: 0.5rem 1rem;
+    color: white;
+    border-radius: 2rem;
+    cursor: pointer;
+  }
+
+  .info-panel {
+    width: 300px;
+    background: white;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+  .info-panel h3 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    color: #374151;
+  }
+  .info-panel .section {
+    margin-bottom: 2rem;
+  }
+  .info-panel p {
+    margin: 0.5rem 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+</style>
+
+
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <h2><span style="color: rgb(29, 29, 106);"> C</span>CIS<span style ="color: rgb(29, 29, 106);">C</span>onnect</h2>
+    <nav>
+      <button>All</button>
+      <!-- Add more buttons nalang???-->
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <nav>
+        <button class="active">Chat</button>
+        <button>Contacts</button>
+        <button>Templates</button>
+        <button>My Projects</button>
+      </nav>
+      <div class="profile">
+        <span id="navbar-username">Anonymous</span>
+        <button id="logout-button">Logout</button>
       </div>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" />
-      <input type="file" id="fileInput" style="display: none; border: 1px solid #ccc; display: inline-block; padding: 6px 12px; cursor: pointer;"/>
-      <button>Send</button>
-    </form>
-  </diV>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
+    </div>
 
-        let counter = 0;
-        const username = prompt("Enter your username:") || "Anonymous";
+    <div class="content">
+      <section class="chat-section">
+        <div class="searchbar">
+          <input type="text" id="searchInput" placeholder="Search messages...">
+        </div>
+        <ul id="messages" class="messages"></ul>
+        <form id="form" class="chat-form">
+          <input id="input" autocomplete="off" placeholder="Type your message..." />
+          <input type="file" id="fileInput">
+          <button type="submit">Send</button>
+        </form>
+      </section>
 
-        const socket = io({
-          auth: {
-            serverOffset: 0,
-            username: username
-          },
-          // enable retries
-          ackTimeout: 10000, // 10 seconds acknowledgment timeout
-          retries: 3,
-        });
-      
-        const form = document.getElementById('form');
-        const input = document.getElementById('input');
-        const messages = document.getElementById('messages');
-      
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const fileInput = document.getElementById('fileInput');
-          const file = fileInput.files[0];
-        
-          if (file) {
-            const formData = new FormData();
-            formData.append('file', file);
-        
-            try {
-              const res = await fetch('/upload', {
-                method: 'POST',
-                body: formData
-              });
-              const data = await res.json();
-              const clientOffset = `${socket.id}-${counter++}`;
-              const fileMsg = `📎 ${data.originalName}: ${location.origin}${data.filePath}`;
-              socket.emit('chat message', fileMsg, clientOffset);
-            } catch (err) {
-              console.error('Upload failed:', err);
-            }
-            fileInput.value = ''; // clear input
-          } else if (input.value.trim()) { //basically checks if meron talaga input user mo
-            //unique offset for each message
-            const clientOffset = `${socket.id}-${counter++}`;
-            socket.emit('chat message', input.value.trim(), clientOffset);
-            input.value = '';
-          }
-        });
-        
-      
-        socket.on('chat message', (msg, serverOffset, sender) => {
-          const item = document.createElement('li');
-          item.textContent = `${sender || 'Anonymous'}: ${msg}`;
-          messages.appendChild(item);
-          window.scrollTo(0, document.body.scrollHeight);
-          socket.auth.serverOffset = serverOffset;
-        });
-      </script>
+      <aside class="info-panel">
+        <div class="section">
+          <h3>General Info</h3>
+          <p id="userName">Name: (N/A)</p>
+          <p id="studno">Student No.: (N/A)</p>
+          <p id="userPhone">Phone: (N/A)</p>
+          <p id="userEmail">Email: (N/A)</p>
+          <p>Status: <span style="color:green;">Active</span></p>
+        </div>
 
-  </body>
+        <div class="section">
+          <h3>Notes</h3>
+          <p>No notes yet.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const username = prompt("Enter your username:") || "Anonymous";
+    document.getElementById('navbar-username').textContent = username;
+
+    const socket = io({
+      auth: {
+        serverOffset: 0,
+        username: username
+      },
+      ackTimeout: 10000,
+      retries: 3,
+    });
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+
+    let counter = 0;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+          const res = await fetch('/upload', { method: 'POST', body: formData });
+          const data = await res.json();
+          const clientOffset = `${socket.id}-${counter++}`;
+          const fileMsg = `📎 ${data.originalName}: ${location.origin}${data.filePath}`;
+          socket.emit('chat message', fileMsg, clientOffset);
+        } catch (err) {
+          console.error('Upload failed:', err);
+        }
+        fileInput.value = '';
+      } else if (input.value.trim()) {
+        const clientOffset = `${socket.id}-${counter++}`;
+        socket.emit('chat message', input.value.trim(), clientOffset);
+        input.value = '';
+      }
+    });
+
+    socket.on('chat message', (msg, serverOffset, sender) => {
+      const item = document.createElement('li');
+      item.textContent = `${sender || 'Anonymous'}: ${msg}`;
+      if ((sender || 'Anonymous') === username) {
+        item.classList.add('self');
+      }
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+      socket.auth.serverOffset = serverOffset;
+    });
+
+    document.getElementById('logout-button').addEventListener('click', () => {
+      window.location.reload();
+    });
+  </script>
+
+</body>
 </html>
